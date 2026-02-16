@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
 import { FaBriefcase, FaCalendarAlt } from 'react-icons/fa';
 
@@ -44,7 +44,7 @@ export default function Parcours() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, x: -50 },
     visible: {
       opacity: 1,

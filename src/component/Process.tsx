@@ -113,7 +113,7 @@ export default function Process() {
           }`} />
 
           <div className="space-y-8">
-            {processSteps.map((step, index) => (
+            {processSteps.map((step) => (
               <motion.div
                 key={step.id}
                 variants={itemVariants}

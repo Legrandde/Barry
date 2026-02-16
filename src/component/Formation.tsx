@@ -57,16 +57,16 @@ export default function Formation() {
     }
   };
 
-  const cardHoverVariants = {
-    hover: {
-      y: -10,
-      scale: 1.02,
-      transition: {
-        duration: 0.3,
-        ease: 'easeOut'
-      }
-    }
-  };
+  // const cardHoverVariants = {
+  //   hover: {
+  //     y: -10,
+  //     scale: 1.02,
+  //     transition: {
+  //       duration: 0.3,
+  //       ease: 'easeOut'
+  //     }
+  //   }
+  // };
 
   return (
     <section className={`py-16 px-4 md:px-8 ${
