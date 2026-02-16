@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
 import { FaCode, FaDatabase, FaMobile, FaCloud, FaTools } from 'react-icons/fa';
 
@@ -86,7 +86,7 @@ export default function Skills() {
     }
   };
 
-  const cardVariants = {
+  const cardVariants:Variants = {
     hidden: { opacity: 0, y: 30 },
     visible: {
       opacity: 1,

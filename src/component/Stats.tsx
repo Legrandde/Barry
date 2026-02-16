@@ -1,4 +1,4 @@
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, type Variants } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
 import { FaProjectDiagram, FaUsers, FaAward, FaCode } from 'react-icons/fa';
@@ -90,7 +90,7 @@ export default function Stats() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants : Variants = {
     hidden: { opacity: 0, y: 30, scale: 0.8 },
     visible: {
       opacity: 1,

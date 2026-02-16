@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
 import { FaGraduationCap, FaCalendarAlt, FaAward } from 'react-icons/fa';
 
@@ -45,7 +45,7 @@ export default function Formation() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 50 },
     visible: {
       opacity: 1,

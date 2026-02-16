@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
 import { FaSearch, FaLightbulb, FaCode, FaRocket, FaCheckCircle } from 'react-icons/fa';
 
@@ -61,7 +61,7 @@ export default function Process() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants:Variants = {
     hidden: { opacity: 0, x: -30 },
     visible: {
       opacity: 1,

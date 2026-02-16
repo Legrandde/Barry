@@ -1,45 +1,57 @@
 import { motion } from "framer-motion";
 import { GiProgression } from "react-icons/gi";
 import { useTheme } from "../contexts/ThemeContext";
+import type { Variants } from "framer-motion";
 
 export default function Banner(){
     const { theme } = useTheme();
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.2,
-                delayChildren: 0.1
-            }
-        }
-    };
+    
 
-    const itemVariants = {
-        hidden: { opacity: 0, x: -30 },
-        visible: {
-            opacity: 1,
-            x: 0,
-            transition: {
-                duration: 0.6,
-                ease: 'easeOut'
-            }
-        }
-    };
+const containerVariants: Variants = {
+  hidden: {
+    opacity: 0,
+  },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+      delayChildren: 0.1,
+    },
+  },
+};
 
-    const imageVariants = {
-        hidden: { opacity: 0, scale: 0.8, x: 30 },
-        visible: {
-            opacity: 1,
-            scale: 1,
-            x: 0,
-            transition: {
-                duration: 0.8,
-                ease: 'easeOut'
-            }
-        }
-    };
+const itemVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    x: -30,
+  },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      duration: 0.6,
+      ease: "easeOut", // type reconnu correctement
+    },
+  },
+};
+
+const imageVariants: Variants = {
+  hidden: {
+    opacity: 0,
+    scale: 0.8,
+    x: 30,
+  },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    x: 0,
+    transition: {
+      duration: 0.8,
+      ease: "easeOut",
+    },
+  },
+};
 
     return(
         <motion.div 
@@ -80,6 +92,7 @@ export default function Banner(){
                 </motion.h1>
                 <motion.h2 
                     variants={itemVariants}
+
                     className={`md:text-5xl text-4xl font-black ${
                         theme === 'dark' ? 'text-white' : 'text-gray-900'
                     }`}
