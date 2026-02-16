@@ -7,7 +7,7 @@ export default function DetailProject(){
 
         <div className="flex flex-col w-1/2  bg-white  m-auto">
             <img src="test.jpg" alt="" />
-            <h2>Titre du projet</h2>
+            <h2>Titre</h2>
             <div className="flex p-4">
                 <img src="barry.png" alt="" className="w-40 h-40 object-cover"/>
                 <img src="bam.jpg" alt="" className="w-40 h-40 object-contain" />
