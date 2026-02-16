@@ -90,7 +90,7 @@ export default function Banner(){
                     variants={itemVariants}
                     className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}
                 >
-                    Ingenieur informatique
+                    Développeur Full-stack
                 </motion.h3>
                 <motion.p 
                     variants={itemVariants}

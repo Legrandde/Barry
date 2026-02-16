@@ -25,7 +25,7 @@ export default function About(){
                     <p className={`text-lg leading-relaxed ${
                         theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
                     }`}>
-                        Ingénieur informatique avec plus de 5 ans d'expérience dans le développement web et mobile. 
+                        Developpeur full-stack. 
                         Je me spécialise dans la création d'applications performantes, scalables et centrées sur l'utilisateur. 
                         Mon approche combine expertise technique et compréhension des besoins métier pour livrer des solutions qui font la différence.
                     </p>

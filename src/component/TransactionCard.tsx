@@ -1,6 +1,6 @@
 import { AiOutlineProduct } from "react-icons/ai";
 import { BiEditAlt } from "react-icons/bi";
-import { BsCashCoin } from "react-icons/bs";
+
 
 export default function TransationCard(){
 
