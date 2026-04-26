@@ -1,7 +1,7 @@
 import { motion, useInView, type Variants } from 'framer-motion';
 import { useRef, useEffect, useState } from 'react';
 import { useTheme } from '../contexts/ThemeContext';
-import { FaProjectDiagram, FaUsers, FaAward, FaCode } from 'react-icons/fa';
+import { FaProjectDiagram, FaUsers, FaAward } from 'react-icons/fa';
 
 interface Stat {
   id: string;

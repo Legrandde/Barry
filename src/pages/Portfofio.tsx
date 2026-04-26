@@ -12,7 +12,6 @@ import Parcours from "../component/Parcours";
 import Formation from "../component/Formation";
 import Stats from "../component/Stats";
 import Process from "../component/Process";
-import Testimonials from "../component/Testimonials";
 import CTA from "../component/CTA";
 import ProjectsSection from "../component/ProjectsSection";
 import ProjectModal from "../component/ProjectModal";
