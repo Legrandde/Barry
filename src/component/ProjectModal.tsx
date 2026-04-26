@@ -1,7 +1,19 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import { FaTimes, FaExternalLinkAlt, FaPlayCircle } from 'react-icons/fa';
-
-import { useTheme } from '../contexts/ThemeContext';
+import { motion, AnimatePresence } from "framer-motion";
+import { X, ExternalLink, Play } from "lucide-react";
+import { useTheme } from "../contexts/ThemeContext";
+export interface Project {
+  id: string;
+  title: string;
+  description: string;
+  mainImage: string;
+  images: string[];
+  type: 'web' | 'mobile' | 'desktop' | 'other';
+  liveUrl?: string;
+  demoUrl?: string;
+  technologies: string[];
+  category: string;
+}
+ 
 
 interface ProjectModalProps {
   project: Project | null;
@@ -9,161 +21,184 @@ interface ProjectModalProps {
   onClose: () => void;
 }
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  mainImage: string; 
-  images: string[]; // 2-3 images supplémentaires
-  type: 'web' | 'mobile' | 'desktop' | 'other';
-  liveUrl?: string; // URL pour visiter le projet (si app web)
-  demoUrl?: string; // URL pour la démo (si applicable)
-  technologies: string[];
-  category: string;
-}
-
-
 export default function ProjectModal({ project, isOpen, onClose }: ProjectModalProps) {
   const { theme } = useTheme();
 
   if (!project) return null;
 
+  const isDark = theme === "dark";
+
   return (
     <AnimatePresence>
       {isOpen && (
-        <>
-          {/* Overlay */}
+        // ── Overlay ────────────────────────────────────────────────────────
+        <motion.div
+          key="modal-overlay"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.25 }}
+          onClick={onClose}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8"
+          style={{ background: "rgba(0,0,0,0.75)", backdropFilter: "blur(6px)" }}
+        >
+          {/* ── Panel principal ────────────────────────────────────────────── */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={onClose}
-            className="fixed inset-0 bg-black/70 dark:bg-black/80 z-50 flex items-center justify-center p-4"
+            key="modal-panel"
+            initial={{ opacity: 0, scale: 0.95, y: 16 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 16 }}
+            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+            onClick={(e) => e.stopPropagation()}
+            className={`relative w-full max-w-5xl rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row ${
+              isDark ? "bg-gray-900 text-white" : "bg-white text-gray-900"
+            }`}
+            // Hauteur fixe — pas de scroll
+            style={{ height: "min(88vh, 580px)" }}
           >
-            {/* Modal Content */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className={`relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded shadow-2xl ${
-                theme === 'dark' 
-                  ? 'bg-gray-800 text-white' 
-                  : 'bg-white text-gray-900'
-              }`}
-            >
-              {/* Close Button */}
+            {/* ── Colonne image (gauche) ──────────────────────────────────── */}
+            <div className="relative w-full md:w-1/2 h-56 md:h-full flex-shrink-0">
+              <img
+                src={project.mainImage}
+                alt={project.title}
+                className="w-full h-full object-cover"
+              />
+
+              {/* Badge type */}
+              <span
+                className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-widest"
+                style={{
+                  background: "rgba(245,158,11,0.15)",
+                  color: "#f59e0b",
+                  border: "1px solid rgba(245,158,11,0.4)",
+                }}
+              >
+                {project.type}
+              </span>
+
+              {/* Gradient de transition vers le contenu (mobile) */}
+              <div
+                className="absolute bottom-0 left-0 right-0 h-16 md:hidden"
+                style={{
+                  background: isDark
+                    ? "linear-gradient(to bottom, transparent, #111827)"
+                    : "linear-gradient(to bottom, transparent, white)",
+                }}
+              />
+            </div>
+
+            {/* ── Colonne contenu (droite) ────────────────────────────────── */}
+            <div className="flex flex-col flex-1 p-6 md:p-8 overflow-hidden">
+              {/* Close button */}
               <button
                 onClick={onClose}
-                className={`absolute top-4 right-4 z-10 p-2 rounded-full transition-colors ${
-                  theme === 'dark'
-                    ? 'bg-gray-700 hover:bg-gray-600 text-white'
-                    : 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-                }`}
                 aria-label="Fermer"
+                className={`absolute top-4 right-4 p-1.5 rounded-full transition-colors ${
+                  isDark
+                    ? "hover:bg-white/10 text-gray-400 hover:text-white"
+                    : "hover:bg-black/5 text-gray-400 hover:text-gray-900"
+                }`}
               >
-                <FaTimes size={20} />
+                <X size={18} />
               </button>
 
-              {/* Main Image */}
-              <div className="relative w-full h-64 md:h-96 overflow-hidden rounded-t-2xl">
-                <img
-                  src={project.mainImage}
-                  alt={project.title}
-                  className="w-full h-full object-cover"
-                />
+              {/* Catégorie */}
+              <p className="text-xs uppercase tracking-widest text-amber-500 font-semibold mb-2">
+                {project.category}
+              </p>
+
+              {/* Titre */}
+              <h2 className="text-2xl md:text-3xl font-bold leading-tight mb-3">
+                {project.title}
+              </h2>
+
+              {/* Description */}
+              <p
+                className={`text-sm leading-relaxed mb-5 ${
+                  isDark ? "text-gray-400" : "text-gray-500"
+                }`}
+              >
+                {project.description}
+              </p>
+
+              {/* Séparateur */}
+              <div
+                className={`w-10 h-px mb-5 ${isDark ? "bg-white/10" : "bg-black/10"}`}
+              />
+
+              {/* Technologies */}
+              <p
+                className={`text-xs uppercase tracking-widest font-semibold mb-2 ${
+                  isDark ? "text-gray-500" : "text-gray-400"
+                }`}
+              >
+                Stack
+              </p>
+              <div className="flex flex-wrap gap-2 mb-auto">
+                {project.technologies.map((tech) => (
+                  <span
+                    key={tech}
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      isDark
+                        ? "bg-white/5 text-gray-300 border border-white/10"
+                        : "bg-gray-100 text-gray-600 border border-gray-200"
+                    }`}
+                  >
+                    {tech}
+                  </span>
+                ))}
               </div>
 
-              {/* Content */}
-              <div className="p-6 md:p-8">
-                {/* Title and Description */}
-                <div className="mb-6">
-                  <h2 className="text-3xl md:text-4xl font-bold mb-3 text-amber-500 dark:text-amber-400">
-                    {project.title}
-                  </h2>
-                  <p className={`text-lg ${
-                    theme === 'dark' ? 'text-gray-300' : 'text-gray-600'
-                  }`}>
-                    {project.description}
-                  </p>
-                </div>
-
-                {/* Technologies */}
-                <div className="mb-6">
-                  <h3 className={`text-xl font-semibold mb-3 ${
-                    theme === 'dark' ? 'text-gray-200' : 'text-gray-800'
-                  }`}>
-                    Technologies utilisées
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 dark:bg-amber-500/30 text-sm font-medium"
-                      >
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Additional Images */}
-                {project.images && project.images.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className={`text-xl font-semibold mb-3 ${
-                      theme === 'dark' ? 'text-gray-200' : 'text-gray-800'
-                    }`}>
-                      Autres captures
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {project.images.map((image, index) => (
-                        <motion.div
-                          key={index}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index * 0.1 }}
-                          className="relative overflow-hidden rounded aspect-video"
-                        >
-                          <img
-                            src={image}
-                            alt={`${project.title} - Capture ${index + 1}`}
-                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                          />
-                        </motion.div>
-                      ))}
+              {/* Miniatures (max 3, visibles si place disponible) */}
+              {project.images.length > 0 && (
+                <div className="hidden md:flex gap-2 mt-5">
+                  {project.images.slice(0, 3).map((img, i) => (
+                    <div
+                      key={i}
+                      className="flex-1 rounded-lg overflow-hidden aspect-video"
+                    >
+                      <img
+                        src={img}
+                        alt={`${project.title} capture ${i + 1}`}
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      />
                     </div>
-                  </div>
-                )}
-
-                {/* Action Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 mt-8">
-                  {project.type === 'web' && project.liveUrl && (
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 px-6 py-3 rounded bg-amber-500 hover:bg-amber-600 text-white font-semibold transition-colors"
-                    >
-                      <FaExternalLinkAlt />
-                      Visiter le site
-                    </a>
-                  )}
-                  {project.demoUrl && (
-                    <a
-                      href={project.demoUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-center gap-2 px-6 py-3 rounded border-2 border-amber-500 text-amber-500 hover:bg-amber-500 hover:text-white font-semibold transition-colors"
-                    >
-                      <FaPlayCircle />
-                      Voir la démo
-                    </a>
-                  )}
+                  ))}
                 </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-3 mt-5 pt-5 border-t border-dashed ${isDark ? 'border-white/10' : 'border-gray-200'}">
+                {project.type === "web" && project.liveUrl && (
+                  <a
+                    href={project.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-white text-sm font-semibold transition-colors"
+                  >
+                    <ExternalLink size={14} />
+                    Voir le site
+                  </a>
+                )}
+                {project.demoUrl && (
+                  <a
+                    href={project.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl border text-sm font-semibold transition-colors ${
+                      isDark
+                        ? "border-white/20 text-white hover:bg-white/5"
+                        : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    <Play size={14} />
+                    Démo
+                  </a>
+                )}
               </div>
-            </motion.div>
+            </div>
           </motion.div>
-        </>
+        </motion.div>
       )}
     </AnimatePresence>
   );

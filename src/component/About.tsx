@@ -11,7 +11,7 @@ export default function About(){
             
             <div className="flex flex-col md:flex-row gap-12 items-center">
                 <div className="flex-shrink-0">
-                    <img src="my_face.jpg" alt="Alhassane Barry" className="w-80 h-80 rounded object-cover"/>
+                    <img src="my_face.jpg" alt="Alhassane Barry" className="w-80 hidden md:block h-80 rounded object-cover"/>
                 </div>
                 <div className="flex flex-col gap-6 flex-1">
                     <div>

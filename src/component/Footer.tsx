@@ -217,7 +217,7 @@ export default function Footer() {
             <p className={`text-sm ${
               theme === 'dark' ? 'text-gray-500' : 'text-gray-600'
             }`}>
-              Développé avec ❤️ et passion
+              Développé avec passion
             </p>
           </div>
         </div>

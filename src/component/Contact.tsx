@@ -7,8 +7,8 @@ import { useTheme } from "../contexts/ThemeContext";
 export default function Contact(){
     const { theme } = useTheme();
 
-    return(
-        <div className={`flex p-4 w-full gap-4 flex-col justify-center items-center ${
+    return( 
+        <div className={`flex p-4 w-full gap-4 flex-col justify-centenr items-center ${
             theme === 'dark' ? 'bg-gray-900' : 'bg-transparent'
         }`} id="contact">
             <div className="text-center mb-12">

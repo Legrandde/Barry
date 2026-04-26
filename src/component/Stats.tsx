@@ -16,7 +16,7 @@ const stats: Stat[] = [
   {
     id: '1',
     icon: <FaProjectDiagram size={40} />,
-    value: 50,
+    value: 10,
     suffix: '+',
     label: 'Projets réalisés',
     color: 'from-blue-500 to-blue-600'
@@ -24,23 +24,16 @@ const stats: Stat[] = [
   {
     id: '2',
     icon: <FaUsers size={40} />,
-    value: 30,
+    value: 10,
     suffix: '+',
     label: 'Clients satisfaits',
     color: 'from-green-500 to-green-600'
   },
+ 
   {
     id: '3',
-    icon: <FaCode size={40} />,
-    value: 100000,
-    suffix: '+',
-    label: 'Lignes de code',
-    color: 'from-purple-500 to-purple-600'
-  },
-  {
-    id: '4',
     icon: <FaAward size={40} />,
-    value: 5,
+    value: 2,
     suffix: '+',
     label: 'Années d\'expérience',
     color: 'from-amber-500 to-amber-600'
@@ -127,7 +120,7 @@ export default function Stats() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-6"
+          className="flex flex-col md:flex-row justify-center md:grid-cols-4 gap-6"
         >
           {stats.map((stat) => (
             <motion.div
@@ -141,7 +134,7 @@ export default function Stats() {
               }`}
             >
               {/* Gradient Background */}
-              <div className={`absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r ${stat.color}`} />
+              <div className={`absolute top-0 left-0 right-0 h-0.5 `} />
               
               {/* Icon */}
               <div className={`inline-flex p-4 rounded mb-4 bg-gradient-to-br ${stat.color} text-white`}>
