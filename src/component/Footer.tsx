@@ -1,6 +1,7 @@
-import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope, FaPhone } from 'react-icons/fa';
+import { FaGithub, FaLinkedin, FaTwitter, FaEnvelope } from 'react-icons/fa';
 import { useTheme } from '../contexts/ThemeContext';
 import { FaLocationDot } from 'react-icons/fa6';
+import { PhoneCall } from 'lucide-react';
 
 export default function Footer() {
   const { theme } = useTheme();
@@ -183,7 +184,7 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3">
               <li className="flex items-center gap-3">
-                <FaPhone className="text-amber-500" />
+                <PhoneCall className="text-amber-500" />
                 <span className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'}>
                   +224 626 01 45 52
                 </span>
