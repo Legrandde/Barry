@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
-import { FaArrowRight, FaEnvelope, FaPhone } from 'react-icons/fa';
+import { FaArrowRight, FaEnvelope } from 'react-icons/fa';
 import { PhoneCall } from 'lucide-react';
 
 export default function CTA() {
