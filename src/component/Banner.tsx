@@ -6,7 +6,9 @@ import {
   SiDjango,
   SiLaravel,
   SiReact,
-  SiTailwindcss
+  SiTailwindcss,
+  SiNestjs,
+  SiPostgresql
 } from "react-icons/si";
 import { useTheme } from "../contexts/ThemeContext";
 import type { Variants } from "framer-motion";
@@ -61,11 +63,13 @@ const imageVariants: Variants = {
 
 const techLogos = [
   { Icon: SiGithub,      angle: 0,   color: theme === 'dark' ? '#ffffff' : '#24292e' },
-  { Icon: SiDocker,      angle: 72,  color: '#2496ED' },
+  { Icon: SiDocker,      angle: 90,  color: '#2496ED' },
   { Icon: SiDjango,      angle: 144, color: theme === 'dark' ? '#44B78B' : '#092E20' },
   { Icon: SiLaravel,     angle: 216, color: '#FF2D20' },
   { Icon: SiReact,       angle: 288, color: '#007ACC' },
   { Icon: SiTailwindcss, angle: 28,  color: '#007ACC' },
+  { Icon: SiNestjs, angle: 180,  color: '#FF2D20' },
+  { Icon: SiPostgresql, angle: 250,  color: '#007ACC' },
 ];
 
     return(
