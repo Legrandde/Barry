@@ -63,16 +63,16 @@ const projects: Project[] = [
   },
   {
     id: "3",
-    title: "Plateforme Agricole Collaborative",
+    title: "Application mise en relation  agritulteurs consommateurs ",
     description: "Application web pour optimiser les rendements agricoles en Guinée, gestion des parcelles, transport, stockage et conseils experts.",
-    mainImage: "https://res.cloudinary.com/alhassane-b/image/upload/v1680000000/agriculture-main.png",
+    mainImage: "leydi/realisation-1 cpie.png",
     images: [
-      "https://res.cloudinary.com/alhassane-b/image/upload/v1680000000/agriculture-1.png",
-      "https://res.cloudinary.com/alhassane-b/image/upload/v1680000000/agriculture-2.png",
+      "leydi/ba.png",
+      "leydi/Sans titre-1-Récupéré.png",
+      "leydi/c.png",
     ],
-    type: "web",
-    liveUrl: "https://agriculture-guinee.com",
-    technologies: ["Django", "React", "PostgreSQL", "Leaflet.js"],
+    type: "mobile",
+    technologies: ["Django", "React Native", "PostgreSQL"],
     category: "Web Development",
   },
   {
