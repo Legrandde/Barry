@@ -112,7 +112,7 @@ const projects: Project[] = [
       "teranga/3.png",
     ],
     type: "web",
-    liveUrl: "https://dakar-dreams-git-main-alhassane-barrys-projects.vercel.app/",
+    liveUrl: "https://dakar-dreams.vercel.app/",
     technologies: ["TailwindCSS", "React", "Vercel"],
     category: "Web Development",
   },
