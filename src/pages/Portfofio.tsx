@@ -62,12 +62,14 @@ const projects: Project[] = [
   },
   {
     id: "3",
-    title: "Plateforme Prise de Rendez-vous Médical",
-    description: "Application web pour la prise de rendez-vous avec médecins et suivi des patients.",
-    mainImage: "https://res.cloudinary.com/alhassane-b/image/upload/v1680000000/medical-main.png",
+    title: "Plateforme web de revision",
+    description: "Application web pourfaciliter la révision des eléves avec des exercices et corrigé et anciens sujets d'exament(bac, brevet et entrée en 7eme).",
+    mainImage: "Tely/banner.png",
     images: [
-      "https://res.cloudinary.com/alhassane-b/image/upload/v1680000000/medical-1.png",
-      "https://res.cloudinary.com/alhassane-b/image/upload/v1680000000/medical-2.png",
+      "Tely/im1.png",
+      "Tely/im2.png",
+      
+      
     ],
     type: "web",
     technologies: ["React", "NestJS", "PostgreSQL", "TypeScript", "TailwindCSS"],

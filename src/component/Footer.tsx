@@ -46,7 +46,7 @@ export default function Footer() {
                 <FaGithub size={20} />
               </a>
               <a
-                href="https://linkedin.com"
+                href="https://www.linkedin.com/in/alhassane-barry-71116728b?lipi=urn%3Ali%3Apage%3Ad_flagship3_messaging_conversation_detail%3B20Px4NFMRA6jLrwQ%2FI8uQQ%3D%3D"
                 target="_blank"
                 rel="noopener noreferrer"
                 className={`p-2 rounded-full transition-colors ${
