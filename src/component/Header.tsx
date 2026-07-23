@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { BiMenu, BiPhone } from "react-icons/bi";
-import { FaSearch } from "react-icons/fa";
 import { FaLocationDot } from "react-icons/fa6";
 import { FaMoon, FaSun } from "react-icons/fa";
 import { useTheme } from "../contexts/ThemeContext";
