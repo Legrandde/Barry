@@ -66,13 +66,13 @@ export default function Header(){
                     </div>
                 </div>
 
-                <div className={`${menuDisplay? "flex flex-col": "hidden"} md:flex md:flex-row p-4 items-center justify-between md:w-[60%] m-auto border-t ${
+                <div className={`${menuDisplay? "flex flex-col": "hidden"} md:flex md:flex-row md:flex-wrap p-4 items-center justify-center gap-x-8 gap-y-2 md:w-[90%] lg:w-[75%] m-auto border-t ${
                     theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
                 }`}>
-                    <div className="flex flex-col md:flex-row gap-10">
+                    <div className="flex flex-col md:flex-row md:flex-wrap items-center justify-center gap-4 md:gap-8">
                         <a 
                             href="#accueil" 
-                            className={`hover:text-amber-500 transition-colors ${
+                            className={`whitespace-nowrap hover:text-amber-500 transition-colors ${
                                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                             }`}
                         >
@@ -80,7 +80,7 @@ export default function Header(){
                         </a>
                         <a 
                             href="#about" 
-                            className={`hover:text-amber-500 transition-colors ${
+                            className={`whitespace-nowrap hover:text-amber-500 transition-colors ${
                                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                             }`}
                         >
@@ -88,7 +88,7 @@ export default function Header(){
                         </a>
                         <a 
                             href="#services" 
-                            className={`hover:text-amber-500 transition-colors ${
+                            className={`whitespace-nowrap hover:text-amber-500 transition-colors ${
                                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                             }`}
                         >
@@ -96,7 +96,7 @@ export default function Header(){
                         </a>
                         <a 
                             href="#skills" 
-                            className={`hover:text-amber-500 transition-colors ${
+                            className={`whitespace-nowrap hover:text-amber-500 transition-colors ${
                                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                             }`}
                         >
@@ -104,7 +104,7 @@ export default function Header(){
                         </a>
                         <a 
                             href="#parcours" 
-                            className={`hover:text-amber-500 transition-colors ${
+                            className={`whitespace-nowrap hover:text-amber-500 transition-colors ${
                                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                             }`}
                         >
@@ -112,7 +112,7 @@ export default function Header(){
                         </a>
                         <a 
                             href="#formation" 
-                            className={`hover:text-amber-500 transition-colors ${
+                            className={`whitespace-nowrap hover:text-amber-500 transition-colors ${
                                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                             }`}
                         >
@@ -120,7 +120,7 @@ export default function Header(){
                         </a>
                         <a 
                             href="#projets" 
-                            className={`hover:text-amber-500 transition-colors ${
+                            className={`whitespace-nowrap hover:text-amber-500 transition-colors ${
                                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                             }`}
                         >
@@ -128,29 +128,14 @@ export default function Header(){
                         </a>
                         <a 
                             href="#contact" 
-                            className={`hover:text-amber-500 transition-colors ${
+                            className={`whitespace-nowrap hover:text-amber-500 transition-colors ${
                                 theme === 'dark' ? 'text-gray-300' : 'text-gray-700'
                             }`}
                         >
                             Contact
                         </a>
                     </div>
-                    <div className={`flex rounded border p-2 border-amber-500 items-center justify-center w-full md:w-64 gap-3 ${
-                        theme === 'dark' ? 'bg-gray-800' : 'bg-white'
-                    }`}>
-                        <FaSearch className={theme === 'dark' ? 'text-gray-400' : 'text-gray-600'} />
-                        <input 
-                            type="search" 
-                            className={`outline-none w-full ${
-                                theme === 'dark' 
-                                    ? 'bg-gray-800 text-white placeholder-gray-500' 
-                                    : 'bg-white text-gray-900'
-                            }`}
-                            name="" 
-                            id="" 
-                            placeholder="Chercher..."
-                        />
-                    </div>
+                    
                 </div>
             </header>
     )

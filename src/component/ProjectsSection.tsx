@@ -24,7 +24,7 @@ export default function ProjectsSection({ projects, onProjectClick }: ProjectsSe
     const { theme } = useTheme();
 
     return (
-        <div className={`flex md:flex-col w-full flex-col md:mt-80 p-6 ${
+        <div className={`flex md:flex-col w-full flex-col  p-6 ${
             theme === 'dark' ? 'bg-gray-900' : 'bg-transparent'
         }`} id="projets">
             <div className="text-center mb-12">

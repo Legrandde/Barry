@@ -19,7 +19,7 @@ const educations: Education[] = [
     institution: 'Univers Professionnel de Dakar (Unipro)',
     period: '2024 - 2026',
     description: 'Formation complète en informatique avec focus sur la programmation et les systèmes d\'information et réseaux informatique.',
-    achievements: []
+    achievements: ['Mention Excellente']
   },
   {
     id: '1',
@@ -100,14 +100,14 @@ export default function Formation() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="flex flex-wrap justify-center gap-6"
         >
           {educations.map((edu) => (
             <motion.div
               key={edu.id}
               variants={itemVariants}
               whileHover="hover"
-              className={`relative overflow-hidden rounded transition-all duration-300 ${
+              className={`relative overflow-hidden rounded transition-all duration-300 w-full md:w-[calc(50%-12px)] lg:w-[400px] ${
                 theme === 'dark' 
                   ? 'bg-gray-800/50 border border-gray-700/50 hover:border-amber-500/50' 
                   : 'bg-white border border-gray-200 hover:border-amber-300'
