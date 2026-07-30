@@ -64,7 +64,7 @@ const projects: Project[] = [
     id: "3",
     title: "Plateforme web de revision",
     description: "Application web pourfaciliter la révision des eléves avec des exercices et corrigé et anciens sujets d'exament(bac, brevet et entrée en 7eme).",
-    mainImage: "Tely/banner.png",
+    mainImage: "Tely/image.png",
     images: [
       "Tely/im1.png",
       "Tely/im2.png",
