@@ -28,6 +28,14 @@ const experiences: Experience[] = [
     description: 'Mise en place de server DHCP, Windows Server, mise en place d\'un réseau d\' entreprise.',
     technologies: ['Rufus', 'DHCP', 'vmware Workstation 17']
   },
+  {
+    id: '3',
+    title: 'Stagiére  en developpement full-stack',
+    company: 'Aiglix Lab',
+    period: 'Fevr 2026 - Jui 2026',
+    description: "Conception et développement d’une application intelligente de suivi et d’optimisation de la consommation électrique basée sur l’Internet des Objets (l’IoT) : cas d’EcoSystem",
+    technologies: ['React native', 'Django', 'IoT', 'MQTT']
+  },
   
 ];
 

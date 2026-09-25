@@ -33,8 +33,5 @@ export const Router = createBrowserRouter(
             path: "detaille",
             element: <DetailProject />
         }
-            
-    
-
     ]
 )
