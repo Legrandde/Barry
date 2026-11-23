@@ -4,6 +4,7 @@ import { BiPhone } from "react-icons/bi";
 import { CiLocationOn } from "react-icons/ci";
 import { useTheme } from "../contexts/ThemeContext";
 import { useContent } from "../contexts/content";
+import { useToast } from "../contexts/toast";
 import { sendContactMessage } from "../services/api";
 import { track } from "../services/analytics";
 import { useState } from "react";
@@ -27,6 +28,7 @@ interface FormData {
 export default function Contact() {
   const { theme } = useTheme();
   const { contact } = useContent();
+  const toast = useToast();
 
   const [formData, setFormData] = useState<FormData>({
     name: "",
@@ -49,6 +51,7 @@ export default function Contact() {
 
     if (!formData.name.trim() || !formData.email.trim() || !formData.subject.trim() || !formData.message.trim()) {
       setStatus("empty");
+      toast.error("Veuillez remplir tous les champs obligatoires.");
       return;
     }
 
@@ -88,10 +91,13 @@ export default function Contact() {
 
       track("contact_form_sent");
       setStatus("success");
+      toast.success("Message envoyé avec succès !");
       setFormData({ name: "", email: "", phone: "", subject: "", message: "", website: "" });
     } catch (error) {
-      setErrorMsg(error instanceof Error ? error.message : "Une erreur s'est produite.");
+      const msg = error instanceof Error ? error.message : "Une erreur s'est produite.";
+      setErrorMsg(msg);
       setStatus("error");
+      toast.error(msg);
     }
   };
 

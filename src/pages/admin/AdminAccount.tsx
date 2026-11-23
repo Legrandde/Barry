@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { changePassword, changeUsername } from "../../services/adminApi";
 import { useAuth } from "../../contexts/AuthContext";
+import { useToast } from "../../contexts/toast";
 
 export default function AdminAccount() {
   const { admin, refresh } = useAuth();
+  const toast = useToast();
   const [pwdCurrent, setPwdCurrent] = useState("");
   const [pwdNew, setPwdNew] = useState("");
   const [userCurrentPwd, setUserCurrentPwd] = useState("");
@@ -20,8 +22,11 @@ export default function AdminAccount() {
       setPwdCurrent("");
       setPwdNew("");
       setNotice("Mot de passe modifié avec succès.");
+      toast.success("Mot de passe modifié avec succès.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors du changement de mot de passe.");
+      const msg = err instanceof Error ? err.message : "Erreur lors du changement de mot de passe.";
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -34,8 +39,11 @@ export default function AdminAccount() {
       setUserCurrentPwd("");
       await refresh();
       setNotice("Identifiant modifié avec succès.");
+      toast.success("Identifiant modifié avec succès.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors du changement d'identifiant.");
+      const msg = err instanceof Error ? err.message : "Erreur lors du changement d'identifiant.";
+      setError(msg);
+      toast.error(msg);
     }
   };
 

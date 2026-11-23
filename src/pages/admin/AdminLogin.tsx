@@ -3,10 +3,12 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { Lock, Moon, Sun, User } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useToast } from "../../contexts/toast";
 
 export default function AdminLogin() {
   const { admin, loading, login } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const toast = useToast();
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -31,9 +33,12 @@ export default function AdminLogin() {
     setSubmitting(true);
     try {
       await login(username.trim(), password);
+      toast.success("Connexion réussie !");
       navigate("/admin", { replace: true });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Identifiant ou mot de passe incorrect.");
+      const msg = err instanceof Error ? err.message : "Identifiant ou mot de passe incorrect.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSubmitting(false);
     }

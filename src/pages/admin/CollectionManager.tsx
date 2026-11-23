@@ -11,6 +11,7 @@ import {
   type MediaItem,
 } from "../../services/adminApi";
 import { CONTENT_CACHE_KEY } from "../../contexts/ContentContext";
+import { useToast } from "../../contexts/toast";
 import ConfirmDialog from "../../component/admin/ConfirmDialog";
 
 interface AnyItem {
@@ -158,6 +159,7 @@ function clearFrontCache() {
 export default function CollectionManager() {
   const { collection = "projects" } = useParams();
   const schema = SCHEMAS[collection] ?? SCHEMAS.projects;
+  const toast = useToast();
   const [items, setItems] = useState<AnyItem[]>([]);
   const [mediaList, setMediaList] = useState<MediaItem[]>([]);
   const [pickerField, setPickerField] = useState<string | null>(null);
@@ -244,14 +246,18 @@ export default function CollectionManager() {
       const payload = buildPayload();
       if (editingId === null) {
         await createCollectionItem(collection, payload);
+        toast.success("Élément ajouté avec succès !");
       } else {
         await updateCollectionItem(collection, editingId, payload);
+        toast.success("Modifications enregistrées !");
       }
       clearFrontCache();
       setEditingId(undefined);
       load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'enregistrement.");
+      const msg = err instanceof Error ? err.message : "Erreur lors de l'enregistrement.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -261,9 +267,12 @@ export default function CollectionManager() {
     try {
       await updateCollectionItem(collection, item.id, { isPublished: !item.isPublished });
       clearFrontCache();
+      toast.success(item.isPublished ? "Élément masqué (brouillon)." : "Élément publié sur le site.");
       load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur de mise à jour.");
+      const msg = err instanceof Error ? err.message : "Erreur de mise à jour.";
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -277,10 +286,13 @@ export default function CollectionManager() {
     try {
       await deleteCollectionItem(collection, pendingDelete.id);
       clearFrontCache();
+      toast.success(`« ${itemTitle(pendingDelete)} » supprimé.`);
       setPendingDelete(null);
       load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur de suppression.");
+      const msg = err instanceof Error ? err.message : "Erreur de suppression.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setDeleting(false);
     }
@@ -300,8 +312,11 @@ export default function CollectionManager() {
       );
       clearFrontCache();
       setItems(updated);
+      toast.success("Ordre mis à jour.");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur de réordonnancement.");
+      const msg = err instanceof Error ? err.message : "Erreur de réordonnancement.";
+      setError(msg);
+      toast.error(msg);
       load();
     }
   };

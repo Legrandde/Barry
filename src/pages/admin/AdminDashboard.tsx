@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { Globe2, MapPin, RefreshCw } from "lucide-react";
 import { getAnalyticsSummary, type AnalyticsSummary } from "../../services/adminApi";
 import { countryFlag, countryName } from "../../utils/geo";
+import { useToast } from "../../contexts/toast";
 
 function GeoBars({
   rows,
@@ -42,18 +43,29 @@ export default function AdminDashboard() {
   const [geoView, setGeoView] = useState<"countries" | "regions">("countries");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const toast = useToast();
 
-  const load = useCallback(() => {
-    setLoading(true);
-    setError("");
-    getAnalyticsSummary(days)
-      .then(setSummary)
-      .catch((err) => setError(err instanceof Error ? err.message : "Impossible de charger les statistiques."))
-      .finally(() => setLoading(false));
-  }, [days]);
+  const load = useCallback(
+    (notify = false) => {
+      setLoading(true);
+      setError("");
+      getAnalyticsSummary(days)
+        .then((data) => {
+          setSummary(data);
+          if (notify) toast.info("Statistiques actualisées.");
+        })
+        .catch((err) => {
+          const msg = err instanceof Error ? err.message : "Impossible de charger les statistiques.";
+          setError(msg);
+          if (notify) toast.error(msg);
+        })
+        .finally(() => setLoading(false));
+    },
+    [days, toast]
+  );
 
   useEffect(() => {
-    load();
+    load(false);
   }, [load]);
 
   const distinctCountries = summary?.countries.filter((c) => c.code).length ?? 0;
@@ -112,7 +124,7 @@ export default function AdminDashboard() {
             </button>
           ))}
           <button
-            onClick={load}
+            onClick={() => load(true)}
             disabled={loading}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-200 cursor-pointer disabled:opacity-50"
             title="Actualiser"

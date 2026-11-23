@@ -2,8 +2,10 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import { Copy, Trash2, Upload } from "lucide-react";
 import { deleteMedia, listMedia, uploadMedia, type MediaItem } from "../../services/adminApi";
 import ConfirmDialog from "../../component/admin/ConfirmDialog";
+import { useToast } from "../../contexts/toast";
 
 export default function MediaLibrary() {
+  const toast = useToast();
   const [items, setItems] = useState<MediaItem[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -28,9 +30,12 @@ export default function MediaLibrary() {
     setError("");
     try {
       await uploadMedia(file);
+      toast.success("Média téléversé avec succès !");
       load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Échec du téléversement.");
+      const msg = err instanceof Error ? err.message : "Échec du téléversement.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setUploading(false);
       e.target.value = "";
@@ -40,6 +45,7 @@ export default function MediaLibrary() {
   const copyUrl = (item: MediaItem) => {
     navigator.clipboard.writeText(item.url).catch(() => {});
     setCopiedId(item.id);
+    toast.info("URL copiée dans le presse-papiers.");
     setTimeout(() => setCopiedId(null), 1500);
   };
 
@@ -49,10 +55,13 @@ export default function MediaLibrary() {
     setError("");
     try {
       await deleteMedia(pendingDelete.id);
+      toast.success("Média supprimé.");
       setPendingDelete(null);
       load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur de suppression.");
+      const msg = err instanceof Error ? err.message : "Erreur de suppression.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setDeleting(false);
     }

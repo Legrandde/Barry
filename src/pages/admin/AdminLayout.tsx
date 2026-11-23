@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { useTheme } from "../../contexts/ThemeContext";
+import { useToast } from "../../contexts/toast";
 import { getUnreadCount } from "../../services/adminApi";
 import { applyAdminSeo } from "../../services/seo";
 import ConfirmDialog from "../../component/admin/ConfirmDialog";
@@ -56,6 +57,7 @@ const COLLECTION_LINKS = [
 export default function AdminLayout() {
   const { admin, loading, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
+  const toast = useToast();
   const [unread, setUnread] = useState(0);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [logoutModalOpen, setLogoutModalOpen] = useState(false);
@@ -247,6 +249,7 @@ export default function AdminLayout() {
         onConfirm={() => {
           setLogoutModalOpen(false);
           logout();
+          toast.info("Vous avez été déconnecté.");
         }}
         onCancel={() => setLogoutModalOpen(false)}
       />

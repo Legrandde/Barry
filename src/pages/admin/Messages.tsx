@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { Check, MailOpen, Trash2 } from "lucide-react";
 import { deleteMessage, listMessages, markMessageRead, type ContactMessage } from "../../services/adminApi";
 import ConfirmDialog from "../../component/admin/ConfirmDialog";
+import { useToast } from "../../contexts/toast";
 
 export default function Messages() {
+  const toast = useToast();
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -23,8 +25,15 @@ export default function Messages() {
   }, []);
 
   const toggleRead = async (msg: ContactMessage) => {
-    await markMessageRead(msg.id, !msg.isRead);
-    load();
+    try {
+      await markMessageRead(msg.id, !msg.isRead);
+      toast.info(msg.isRead ? "Message marqué comme non lu." : "Message marqué comme lu.");
+      load();
+    } catch (err) {
+      const m = err instanceof Error ? err.message : "Erreur de mise à jour.";
+      setError(m);
+      toast.error(m);
+    }
   };
 
   const confirmDelete = async () => {
@@ -33,10 +42,13 @@ export default function Messages() {
     setError("");
     try {
       await deleteMessage(pendingDelete.id);
+      toast.success("Message supprimé.");
       setPendingDelete(null);
       load();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur de suppression.");
+      const m = err instanceof Error ? err.message : "Erreur de suppression.";
+      setError(m);
+      toast.error(m);
     } finally {
       setDeleting(false);
     }

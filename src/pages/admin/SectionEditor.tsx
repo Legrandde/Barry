@@ -9,9 +9,11 @@ import {
   type SectionVisibility,
 } from "../../services/adminApi";
 import { CONTENT_CACHE_KEY } from "../../contexts/ContentContext";
+import { useToast } from "../../contexts/toast";
 
 export default function SectionEditor() {
   const { key = "site" } = useParams();
+  const toast = useToast();
   const [data, setData] = useState<Record<string, unknown> | null>(null);
   const [visibility, setVisibility] = useState<SectionVisibility | null>(null);
   const [loading, setLoading] = useState(true);
@@ -43,9 +45,13 @@ export default function SectionEditor() {
       } catch {
         /* ignore */
       }
-      setNotice(updated.isVisible ? "Section affichée sur le site." : "Section masquée sur le site.");
+      const msg = updated.isVisible ? "Section affichée sur le site." : "Section masquée sur le site.";
+      setNotice(msg);
+      toast.success(msg);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur de visibilité.");
+      const msg = err instanceof Error ? err.message : "Erreur de visibilité.";
+      setError(msg);
+      toast.error(msg);
     }
   };
 
@@ -64,8 +70,11 @@ export default function SectionEditor() {
         /* ignore */
       }
       setNotice("Modifications enregistrées !");
+      toast.success("Modifications enregistrées !");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'enregistrement.");
+      const msg = err instanceof Error ? err.message : "Erreur lors de l'enregistrement.";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
