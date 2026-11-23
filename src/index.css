@@ -1,7 +1,18 @@
 @import url('https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap');
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --font-heading: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Satoshi', ui-sans-serif, system-ui, sans-serif;
+}
+
 body {
-  font-family: 'Satoshi', sans-serif;
+  font-family: var(--font-body);
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
 }
 
 /* Configuration pour le mode dark */
@@ -35,4 +46,19 @@ section[id] {
 section {
   padding-top: 5rem;
   padding-bottom: 5rem;
+}
+
+/* Masquer toutes les barres de défilement de l'app tout en gardant le scroll actif */
+html,
+body,
+*,
+*::before,
+*::after {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+html::-webkit-scrollbar,
+body::-webkit-scrollbar,
+*::-webkit-scrollbar {
+  display: none;
 }

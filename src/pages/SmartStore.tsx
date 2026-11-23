@@ -3,6 +3,7 @@ import Input from "../component/Input";
 import { BsGoogle } from "react-icons/bs";
 import { useState } from "react";
 import axios from "axios";
+import { API_URL } from "../services/api";
 
 
 
@@ -17,7 +18,7 @@ export default function SmartStore(){
     e.preventDefault()
     try{
         const response = await axios.post(
-            "http://localhost:8000/smartStore/api/token/",
+            `${API_URL}/smartStore/api/token/`,
             {
                 username,
                 password
@@ -29,8 +30,8 @@ export default function SmartStore(){
         
         window.location.href = "smartStore/dashbord"
     }
-    catch (err: any){
-        setEror(err)
+    catch (err: unknown){
+        setEror(err instanceof Error ? err.message : String(err))
 
     }
 }

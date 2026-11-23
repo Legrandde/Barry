@@ -1,22 +1,10 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ExternalLink, Play } from "lucide-react";
 import { useTheme } from "../contexts/ThemeContext";
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  mainImage: string;
-  images: string[];
-  type: 'web' | 'mobile' | 'desktop' | 'other';
-  liveUrl?: string;
-  demoUrl?: string;
-  technologies: string[];
-  category: string;
-}
- 
+import type { ProjectItem } from "../types/content";
 
 interface ProjectModalProps {
-  project: Project | null;
+  project: ProjectItem | null;
   isOpen: boolean;
   onClose: () => void;
 }

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import type { Variants, Transition } from "framer-motion";
 import Header from "../component/Header";
@@ -15,108 +15,12 @@ import Process from "../component/Process";
 import CTA from "../component/CTA";
 import ProjectsSection from "../component/ProjectsSection";
 import ProjectModal from "../component/ProjectModal";
+import Testimonials from "../component/Testimonials";
 import { useTheme } from "../contexts/ThemeContext";
+import { useContent } from "../contexts/content";
+import { track, trackPageview } from "../services/analytics";
+import type { ProjectItem } from "../types/content";
 import { BsWhatsapp } from "react-icons/bs";
-
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  mainImage: string;
-  images: string[];
-  type: 'web' | 'mobile' | 'desktop' | 'other';
-  liveUrl?: string;
-  demoUrl?: string;
-  technologies: string[];
-  category: string;
-}
-
-const projects: Project[] = [
- 
-  {
-    id: "1",
-    title: "Application Immobilier",
-    description: "Application web pour la gestion d'une agence immobilière avec accès locataires pour paiement en ligne et suivi des factures.",
-    mainImage: "classiqueImmo/banner.jpeg",
-    images: [
-      "classiqueImmo/1.jpeg",
-      "classiqueImmo/2.jpeg",
-    ],
-    type: "web",
-    technologies: ["PHP", "MySQL", "TailwindCSS", "Prometheus", "Grafana"],
-    category: "Web Development",
-  },
-  {
-    id: "2",
-    title: "Application mise en relation  agritulteurs consommateurs ",
-    description: "Application web pour optimiser les rendements agricoles en Guinée, gestion des parcelles, transport, stockage et conseils experts.",
-    mainImage: "leydi/realisation-1 cpie.png",
-    images: [
-      "leydi/ba.png",
-      "leydi/Sans titre-1-Récupéré.png",
-      "leydi/c.png",
-    ],
-    type: "mobile",
-    technologies: ["Django", "React Native", "PostgreSQL"],
-    category: "Web Development",
-  },
-  {
-    id: "3",
-    title: "Plateforme web de revision",
-    description: "Application web pourfaciliter la révision des eléves avec des exercices et corrigé et anciens sujets d'exament(bac, brevet et entrée en 7eme).",
-    mainImage: "Tely/image.png",
-    images: [
-      "Tely/im1.png",
-      "Tely/im2.png",
-      
-      
-    ],
-    type: "web",
-    technologies: ["React", "NestJS", "PostgreSQL", "TypeScript", "TailwindCSS"],
-    category: "Web Development",
-  },
-  {
-    id: "4",
-    title: "Application Desktop Gestion de Bibliothèque",
-    description: "Logiciel desktop pour gérer les livres, emprunts, retours et membres d'une bibliothèque.",
-    mainImage: "afrilib/banner.png",
-    images: [
-      "afrilib/1.png",
-      "afrilib/2.png",
-    ],
-    type: "desktop",
-    technologies: ["Java", "JavaSwing", "Mysql"],
-    category: "Desktop Application",
-  },
-  {
-    id: "5",
-    title: "Application Mobile Réservation Restaurant & Hôtel",
-    description: "Application mobile pour réserver des restaurants et hôtels avec paiement en ligne.",
-    mainImage: "guesthub/banner.png",
-    images: [
-      "https://res.cloudinary.com/alhassane-b/image/upload/v1680000000/reservation-1.png",
-      "https://res.cloudinary.com/alhassane-b/image/upload/v1680000000/reservation-2.png",
-    ],
-    type: "mobile",
-    technologies: ["React native", "Laravel"],
-    category: "Mobile Application",
-  },
-  {
-    id: "6",
-    title: "Teranga Palace",
-    description: "Site web vitrine pour l'hôtel Teranga Palace avec informations sur les chambres et réservation en ligne.",
-    mainImage: "teranga/terangaBanner.png",
-    images: [
-      "teranga/1.png",
-      "teranga/2.png",
-      "teranga/3.png",
-    ],
-    type: "web",
-    liveUrl: "https://dakar-dreams.vercel.app/",
-    technologies: ["TailwindCSS", "React", "Vercel"],
-    category: "Web Development",
-  },
-];
 
 const fadeUpVariants: Variants = {
   hidden: { opacity: 0, y: 24 },
@@ -130,10 +34,18 @@ const fadeUpTransition: Transition = {
 
 export default function Portfolio() {
   const { theme } = useTheme();
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const { site, projects, testimonials, visibility } = useContent();
+  const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleProjectClick = (project: Project) => {
+  useEffect(() => {
+    trackPageview();
+  }, []);
+
+  const isVisible = (key: string) => visibility[key] !== false;
+
+  const handleProjectClick = (project: ProjectItem) => {
+    track("project_open", project.slug);
     setSelectedProject(project);
     setIsModalOpen(true);
   };
@@ -144,60 +56,95 @@ export default function Portfolio() {
   };
 
   return (
-    <div className={`min-h-screen  transition-colors duration-300 ${theme === "dark" ? "bg-gray-900" : "bg-white"}`}>
-      <button onClick={() => window.open("https://wa.me/224626014552", "_blank")} className="bg-green-400 fixed bottom-4 right-4 p-2 rounded-2xl cursor-pointer shadow-3xl shadow-green-100 z-10"><BsWhatsapp color="white" size={30} /></button>
+    <div className={`min-h-screen transition-colors duration-300 ${theme === "dark" ? "bg-gray-900" : "bg-white"}`}>
+      {site.whatsappNumber && (
+        <button
+          onClick={() => {
+            track("whatsapp_click");
+            window.open(`https://wa.me/${site.whatsappNumber}`, "_blank");
+          }}
+          className="bg-green-400 fixed bottom-4 right-4 p-2 rounded-2xl cursor-pointer shadow-3xl shadow-green-100 z-10"
+          aria-label="WhatsApp"
+        >
+          <BsWhatsapp color="white" size={30} />
+        </button>
+      )}
+
       <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
         <Header />
       </motion.div>
 
-      <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}>
-        <Banner />
-      </motion.div>
+      {isVisible("hero") && (
+        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}>
+          <Banner />
+        </motion.div>
+      )}
 
-      <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
-        <About />
-      </motion.div>
+      {isVisible("about") && (
+        <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
+          <About />
+        </motion.div>
+      )}
 
-      <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
-        <Services />
-      </motion.div>
+      {isVisible("services") && (
+        <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
+          <Services />
+        </motion.div>
+      )}
 
-      <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
-        <Skills />
-      </motion.div>
+      {isVisible("skills") && (
+        <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
+          <Skills />
+        </motion.div>
+      )}
 
-      <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
-        <Stats />
-      </motion.div>
+      {isVisible("stats") && (
+        <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
+          <Stats />
+        </motion.div>
+      )}
 
-      <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
-        <Parcours />
-      </motion.div>
+      {isVisible("parcours") && (
+        <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
+          <Parcours />
+        </motion.div>
+      )}
 
-      <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
-        <Formation />
-      </motion.div>
+      {isVisible("formation") && (
+        <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
+          <Formation />
+        </motion.div>
+      )}
 
-      <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
-        <Process />
-      </motion.div>
+      {isVisible("process") && (
+        <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
+          <Process />
+        </motion.div>
+      )}
 
-      <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
-        <ProjectsSection projects={projects} onProjectClick={handleProjectClick} />
-      </motion.div>
+      {isVisible("projects") && (
+        <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
+          <ProjectsSection projects={projects.items} onProjectClick={handleProjectClick} />
+        </motion.div>
+      )}
 
-      {/* Section Témoignages */}
-      <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
-        {/* <Testimonials /> */}
-      </motion.div>
+      {isVisible("testimonials") && testimonials.items.length > 0 && (
+        <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
+          <Testimonials />
+        </motion.div>
+      )}
 
-      <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
-        <Contact />
-      </motion.div>
+      {isVisible("contact") && (
+        <motion.div variants={fadeUpVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} transition={fadeUpTransition}>
+          <Contact />
+        </motion.div>
+      )}
 
-      <motion.div initial={{ opacity: 0, scale: 0.97 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
-        <CTA />
-      </motion.div>
+      {isVisible("cta") && (
+        <motion.div initial={{ opacity: 0, scale: 0.97 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}>
+          <CTA />
+        </motion.div>
+      )}
 
       <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
         <Footer />

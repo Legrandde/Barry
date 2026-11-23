@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { Categorie } from "../interfaces/Articles";
 import axios from "axios";
+import { API_URL } from "../services/api";
 
 
 
@@ -18,7 +19,7 @@ export default function SearchBar({keyWord, onchangeKeyword, onCategorieShow}:Se
 
      useEffect(()=>{
     const fetchCategories = async () =>{
-      const response = await axios.get<Categorie[]>("http://localhost:8000/ereukacategorie/");
+      const response = await axios.get<Categorie[]>(`${API_URL}/ereukacategorie/`);
       const data = await response.data
       setCategorie(data)
     }

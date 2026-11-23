@@ -1,44 +1,18 @@
-import { motion, useInView, type Variants } from 'framer-motion';
-import { useRef, useEffect, useState } from 'react';
-import { useTheme } from '../contexts/ThemeContext';
-import { FaProjectDiagram, FaUsers, FaAward } from 'react-icons/fa';
+import { motion, useInView, type Variants } from "framer-motion";
+import { useRef, useEffect, useState, type ReactNode } from "react";
+import { useTheme } from "../contexts/ThemeContext";
+import { useContent } from "../contexts/content";
+import { FaProjectDiagram, FaUsers, FaAward, FaCode, FaClock, FaStar } from "react-icons/fa";
 
-interface Stat {
-  id: string;
-  icon: React.ReactNode;
-  value: number;
-  suffix?: string;
-  label: string;
-  color: string;
-}
-
-const stats: Stat[] = [
-  {
-    id: '1',
-    icon: <FaProjectDiagram size={40} />,
-    value: 10,
-    suffix: '+',
-    label: 'Projets réalisés',
-    color: 'from-blue-500 to-blue-600'
-  },
-  {
-    id: '2',
-    icon: <FaUsers size={40} />,
-    value: 10,
-    suffix: '+',
-    label: 'Clients satisfaits',
-    color: 'from-green-500 to-green-600'
-  },
- 
-  {
-    id: '3',
-    icon: <FaAward size={40} />,
-    value: 2,
-    suffix: '+',
-    label: 'Années d\'expérience',
-    color: 'from-amber-500 to-amber-600'
-  }
-];
+const STAT_ICONS: Record<string, ReactNode> = {
+  projects: <FaProjectDiagram size={40} />,
+  users: <FaUsers size={40} />,
+  award: <FaAward size={40} />,
+  code: <FaCode size={40} />,
+  clock: <FaClock size={40} />,
+  star: <FaStar size={40} />,
+  default: <FaProjectDiagram size={40} />,
+};
 
 function AnimatedCounter({ value, suffix, duration = 2 }: { value: number; suffix?: string; duration?: number }) {
   const [count, setCount] = useState(0);
@@ -65,41 +39,28 @@ function AnimatedCounter({ value, suffix, duration = 2 }: { value: number; suffi
 
   return (
     <span ref={ref}>
-      {Math.floor(count).toLocaleString()}{suffix}
+      {Math.floor(count).toLocaleString()}
+      {suffix}
     </span>
   );
 }
 
 export default function Stats() {
   const { theme } = useTheme();
+  const { stats } = useContent();
 
   const containerVariants = {
     hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.2
-      }
-    }
+    visible: { opacity: 1, transition: { staggerChildren: 0.2 } },
   };
 
-  const itemVariants : Variants = {
+  const itemVariants: Variants = {
     hidden: { opacity: 0, y: 30, scale: 0.8 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      scale: 1,
-      transition: {
-        duration: 0.6,
-        ease: 'easeOut'
-      }
-    }
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, ease: "easeOut" } },
   };
 
   return (
-    <section className={`py-20 px-4 md:px-8 ${
-      theme === 'dark' ? 'bg-gray-900' : 'bg-white'
-    }`} id="stats">
+    <section className={`py-20 px-4 md:px-8 ${theme === "dark" ? "bg-gray-900" : "bg-white"}`} id="stats">
       <div className="max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
@@ -108,11 +69,9 @@ export default function Stats() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <span className="text-sm font-semibold text-amber-500 uppercase tracking-wide">Réalisations</span>
-          <h2 className={`text-4xl md:text-5xl font-bold mt-2 mb-4 ${
-            theme === 'dark' ? 'text-white' : 'text-gray-900'
-          }`}>
-            En quelques chiffres
+          <span className="text-sm font-semibold text-amber-500 uppercase tracking-wide">{stats.eyebrow}</span>
+          <h2 className={`text-4xl md:text-5xl font-bold mt-2 mb-4 ${theme === "dark" ? "text-white" : "text-gray-900"}`}>
+            {stats.title}
           </h2>
         </motion.div>
         <motion.div
@@ -122,36 +81,28 @@ export default function Stats() {
           viewport={{ once: true }}
           className="flex flex-col md:flex-row justify-center md:grid-cols-4 gap-6"
         >
-          {stats.map((stat) => (
+          {stats.items.map((stat, idx) => (
             <motion.div
-              key={stat.id}
+              key={idx}
               variants={itemVariants}
               whileHover={{ y: -2 }}
               className={`relative overflow-hidden rounded p-6 ${
-                theme === 'dark' 
-                  ? 'bg-gray-800/50 border border-gray-700/50 hover:border-amber-500/50' 
-                  : 'bg-gray-50 border border-gray-200 hover:border-amber-300'
+                theme === "dark"
+                  ? "bg-gray-800/50 border border-gray-700/50 hover:border-amber-500/50"
+                  : "bg-gray-50 border border-gray-200 hover:border-amber-300"
               }`}
             >
-              {/* Gradient Background */}
-              <div className={`absolute top-0 left-0 right-0 h-0.5 `} />
-              
-              {/* Icon */}
+              <div className="absolute top-0 left-0 right-0 h-0.5" />
+
               <div className={`inline-flex p-4 rounded mb-4 bg-gradient-to-br ${stat.color} text-white`}>
-                {stat.icon}
+                {STAT_ICONS[stat.icon] ?? STAT_ICONS.default}
               </div>
 
-              {/* Value */}
               <div className={`text-4xl md:text-5xl font-bold mb-2 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`}>
                 <AnimatedCounter value={stat.value} suffix={stat.suffix} />
               </div>
 
-              {/* Label */}
-              <p className={`text-sm font-medium ${
-                theme === 'dark' ? 'text-gray-400' : 'text-gray-600'
-              }`}>
-                {stat.label}
-              </p>
+              <p className={`text-sm font-medium ${theme === "dark" ? "text-gray-400" : "text-gray-600"}`}>{stat.label}</p>
             </motion.div>
           ))}
         </motion.div>

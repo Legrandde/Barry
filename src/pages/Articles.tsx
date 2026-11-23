@@ -4,8 +4,10 @@ import {  useNavigate, useParams } from "react-router-dom";
 import type { Articles } from "../interfaces/Articles";
 import axios from "axios";
 import { FiChevronRight } from "react-icons/fi";
+import { API_URL } from "../services/api";
 
-function smartDateFormater(isoDate:any){
+function smartDateFormater(isoDate?: string | number | Date){
+  if (!isoDate) return ""
   const date = new Date(isoDate)
   const realtimeDate = new  Date()
 
@@ -33,13 +35,13 @@ export default function Article(){
 
     useEffect(()=>{
         const fetchArticle =  async () =>{
-            const response = await axios.get<Articles>(`http://localhost:8000/ereukaarticles/${id}`)
+            const response = await axios.get<Articles>(`${API_URL}/ereukaarticles/${id}`)
             setArticle(response.data)
         }
 
         fetchArticle()
 
-    }, [])
+    }, [id])
 
     return(
         <div className="flex flex-col w-full items-center justify-center gap-6">

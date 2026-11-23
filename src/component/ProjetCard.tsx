@@ -2,22 +2,10 @@ import { motion } from "framer-motion";
 import { FaArrowRight } from "react-icons/fa";
 import { useTheme } from "../contexts/ThemeContext";
 
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  mainImage: string; 
-  images: string[]; // 2-3 images supplémentaires
-  type: 'web' | 'mobile' | 'desktop' | 'other';
-  liveUrl?: string; // URL pour visiter le projet (si app web)
-  demoUrl?: string; // URL pour la démo (si applicable)
-  technologies: string[];
-  category: string;
-}
-
+import type { ProjectItem } from "../types/content";
 
 interface ProjectCardProps {
-    project: Project;
+    project: ProjectItem;
     onClick: () => void;
 }
 
