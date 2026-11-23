@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type DragEvent } from "react";
 import { Copy, Trash2, Upload } from "lucide-react";
 import { deleteMedia, listMedia, uploadMedia, type MediaItem } from "../../services/adminApi";
 import ConfirmDialog from "../../component/admin/ConfirmDialog";
@@ -8,6 +8,7 @@ export default function MediaLibrary() {
   const toast = useToast();
   const [items, setItems] = useState<MediaItem[]>([]);
   const [uploading, setUploading] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [error, setError] = useState("");
   const [copiedId, setCopiedId] = useState<number | null>(null);
   const [pendingDelete, setPendingDelete] = useState<MediaItem | null>(null);
@@ -23,22 +24,53 @@ export default function MediaLibrary() {
     load();
   }, []);
 
-  const handleUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const uploadFiles = async (files: FileList | File[]) => {
+    const list = Array.from(files);
+    if (list.length === 0) return;
     setUploading(true);
     setError("");
+    let uploadedCount = 0;
     try {
-      await uploadMedia(file);
-      toast.success("Média téléversé avec succès !");
+      for (const file of list) {
+        await uploadMedia(file);
+        uploadedCount++;
+      }
+      toast.success(
+        uploadedCount > 1 ? `${uploadedCount} médias téléversés avec succès !` : "Média téléversé avec succès !"
+      );
       load();
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Échec du téléversement.";
       setError(msg);
       toast.error(msg);
+      if (uploadedCount > 0) load();
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      await uploadFiles(e.target.files);
       e.target.value = "";
+    }
+  };
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (!isDragging) setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: DragEvent<HTMLDivElement>) => {
+    if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+    setIsDragging(false);
+  };
+
+  const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragging(false);
+    if (e.dataTransfer.files?.length) {
+      await uploadFiles(e.dataTransfer.files);
     }
   };
 
@@ -72,13 +104,37 @@ export default function MediaLibrary() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Médiathèque</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Images (20 Mo max) et vidéos (300 Mo max, compression auto).</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Glissez-déposez vos images (20 Mo max) ou vidéos (300 Mo max, compression auto).
+          </p>
         </div>
         <label className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-600 text-white font-semibold text-sm cursor-pointer">
           <Upload className="w-4 h-4" />
           {uploading ? "Envoi..." : "Téléverser"}
-          <input type="file" onChange={handleUpload} disabled={uploading} className="hidden" />
+          <input type="file" multiple onChange={handleUpload} disabled={uploading} className="hidden" />
         </label>
+      </div>
+
+      {/* Zone de dépôt Drag & Drop */}
+      <div
+        onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
+        onDrop={handleDrop}
+        className={`rounded-xl border-2 border-dashed p-8 text-center transition-all ${
+          isDragging
+            ? "border-amber-500 bg-amber-500/10 scale-[1.01]"
+            : "border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-900/60 hover:border-amber-500/50"
+        }`}
+      >
+        <Upload className={`w-8 h-8 mx-auto mb-2 ${isDragging ? "text-amber-500" : "text-gray-400"}`} />
+        <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+          {uploading
+            ? "Téléversement en cours..."
+            : isDragging
+              ? "Relâchez pour téléverser les fichiers"
+              : "Glissez-déposez un ou plusieurs fichiers ici"}
+        </p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">JPEG, PNG, WebP, GIF, AVIF, MP4, WebM</p>
       </div>
 
       {error && <p className="text-sm text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg p-3">{error}</p>}

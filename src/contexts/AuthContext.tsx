@@ -1,10 +1,23 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
-import { getMe, getToken, login as apiLogin, setToken, type AdminUser } from "../services/adminApi";
+import {
+  getMe,
+  getToken,
+  login as apiLogin,
+  setToken,
+  verify2FA as apiVerify2FA,
+  type AdminUser,
+} from "../services/adminApi";
+
+export interface LoginResult {
+  requires2FA: boolean;
+  challengeToken?: string;
+}
 
 interface AuthContextValue {
   admin: AdminUser | null;
   loading: boolean;
-  login: (username: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<LoginResult>;
+  verify2FA: (challengeToken: string, code: string) => Promise<void>;
   logout: () => void;
   refresh: () => Promise<void>;
 }
@@ -36,8 +49,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void refresh();
   }, []);
 
-  const login = async (username: string, password: string) => {
-    await apiLogin(username, password);
+  const login = async (username: string, password: string): Promise<LoginResult> => {
+    const res = await apiLogin(username, password);
+    if (res.requires_2fa && res.challenge_token) {
+      return { requires2FA: true, challengeToken: res.challenge_token };
+    }
+    const me = await getMe();
+    setAdmin(me);
+    return { requires2FA: false };
+  };
+
+  const verify2FA = async (challengeToken: string, code: string): Promise<void> => {
+    await apiVerify2FA(challengeToken, code);
     const me = await getMe();
     setAdmin(me);
   };
@@ -47,7 +70,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setAdmin(null);
   };
 
-  return <AuthContext.Provider value={{ admin, loading, login, logout, refresh }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ admin, loading, login, verify2FA, logout, refresh }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components

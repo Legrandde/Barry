@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useParams } from "react-router-dom";
-import { Eye, EyeOff, Save } from "lucide-react";
+import { Eye, EyeOff, GripVertical, Plus, Save, Trash2 } from "lucide-react";
 import {
   getSection,
   getSectionVisibility,
@@ -20,6 +20,8 @@ export default function SectionEditor() {
   const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState("");
   const [error, setError] = useState("");
+  const [dragState, setDragState] = useState<{ field: string; index: number } | null>(null);
+  const [dragOver, setDragOver] = useState<{ field: string; index: number } | null>(null);
 
   useEffect(() => {
     setLoading(true);
@@ -84,6 +86,16 @@ export default function SectionEditor() {
     setData((prev) => (prev ? { ...prev, [field]: value } : prev));
   };
 
+  const reorderArrayField = (field: string, from: number, to: number) => {
+    if (!data || from === to) return;
+    const current = data[field];
+    if (!Array.isArray(current)) return;
+    const next = [...current];
+    const [moved] = next.splice(from, 1);
+    next.splice(to, 0, moved);
+    updateField(field, next);
+  };
+
   const inputClass =
     "w-full p-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-amber-500";
 
@@ -94,7 +106,9 @@ export default function SectionEditor() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold capitalize text-gray-900 dark:text-white">Section : {key}</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Modifiez les textes, images ou réglages de ce bloc.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Modifiez les textes, images, réglages ou glissez-déposez les éléments de liste.
+          </p>
         </div>
 
         {visibility && visibility.hideable && (
@@ -117,7 +131,7 @@ export default function SectionEditor() {
       {error && <p className="text-sm text-red-600 dark:text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg p-3">{error}</p>}
 
       {data && (
-        <form onSubmit={handleSave} className="space-y-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
+        <form onSubmit={handleSave} className="space-y-5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-6">
           {Object.entries(data).map(([field, value]) => {
             if (typeof value === "boolean") {
               return (
@@ -133,38 +147,220 @@ export default function SectionEditor() {
               );
             }
 
-            if (Array.isArray(value) || (typeof value === "object" && value !== null)) {
-              const isStringArray = Array.isArray(value) && value.every((v) => typeof v === "string");
+            if (Array.isArray(value)) {
+              const isStringArray = value.every((v) => typeof v === "string");
+
               if (isStringArray) {
+                const items = value as string[];
                 return (
-                  <div key={field}>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      {field} <span className="text-xs text-gray-500">(une entrée par ligne)</span>
-                    </label>
-                    <textarea
-                      rows={Math.max(3, (value as string[]).length + 1)}
-                      value={(value as string[]).join("\n")}
-                      onChange={(e) =>
-                        updateField(
-                          field,
-                          e.target.value
-                            .split("\n")
-                            .map((s) => s.trim())
-                            .filter(Boolean)
-                        )
-                      }
-                      className={inputClass}
-                    />
+                  <div key={field} className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                        {field} <span className="text-xs text-gray-500">(glisser-déposer pour réordonner)</span>
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => updateField(field, [...items, ""])}
+                        className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 hover:underline cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Ajouter
+                      </button>
+                    </div>
+                    <div className="space-y-2">
+                      {items.map((item, idx) => (
+                        <div
+                          key={idx}
+                          draggable
+                          onDragStart={() => setDragState({ field, index: idx })}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            if (dragOver?.field !== field || dragOver.index !== idx) {
+                              setDragOver({ field, index: idx });
+                            }
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            if (dragState && dragState.field === field) {
+                              reorderArrayField(field, dragState.index, idx);
+                            }
+                            setDragState(null);
+                            setDragOver(null);
+                          }}
+                          onDragEnd={() => {
+                            setDragState(null);
+                            setDragOver(null);
+                          }}
+                          className={`flex items-start gap-2 p-2 rounded-lg border transition-all ${
+                            dragState?.field === field && dragState.index === idx
+                              ? "opacity-50 border-amber-500"
+                              : dragOver?.field === field && dragOver.index === idx
+                                ? "border-amber-500 bg-amber-500/5"
+                                : "border-gray-200 dark:border-gray-800"
+                          }`}
+                        >
+                          <GripVertical className="w-4 h-4 mt-2.5 text-gray-400 shrink-0 cursor-grab" />
+                          {item.length > 70 || field === "paragraphs" ? (
+                            <textarea
+                              rows={3}
+                              value={item}
+                              onChange={(e) => {
+                                const next = [...items];
+                                next[idx] = e.target.value;
+                                updateField(field, next);
+                              }}
+                              className={inputClass}
+                            />
+                          ) : (
+                            <input
+                              type="text"
+                              value={item}
+                              onChange={(e) => {
+                                const next = [...items];
+                                next[idx] = e.target.value;
+                                updateField(field, next);
+                              }}
+                              className={inputClass}
+                            />
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => updateField(field, items.filter((_, i) => i !== idx))}
+                            className="p-2 text-red-500 dark:text-red-400 hover:bg-red-500/10 rounded cursor-pointer"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 );
               }
+
+              // Liste d'objets (ex: stats.items, process.steps) — draggable !
+              const objItems = value as Record<string, unknown>[];
+              return (
+                <div key={field} className="space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                      {field} <span className="text-xs text-gray-500">(glisser-déposer pour réordonner)</span>
+                    </label>
+                    {objItems.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const template = Object.fromEntries(
+                            Object.entries(objItems[0]).map(([k, v]) => [k, typeof v === "number" ? 0 : ""])
+                          );
+                          updateField(field, [...objItems, template]);
+                        }}
+                        className="inline-flex items-center gap-1 text-xs text-amber-600 dark:text-amber-400 hover:underline cursor-pointer"
+                      >
+                        <Plus className="w-3.5 h-3.5" /> Ajouter
+                      </button>
+                    )}
+                  </div>
+                  <div className="space-y-3">
+                    {objItems.map((obj, idx) => (
+                      <div
+                        key={idx}
+                        draggable
+                        onDragStart={() => setDragState({ field, index: idx })}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          if (dragOver?.field !== field || dragOver.index !== idx) {
+                            setDragOver({ field, index: idx });
+                          }
+                        }}
+                        onDrop={(e) => {
+                          e.preventDefault();
+                          if (dragState && dragState.field === field) {
+                            reorderArrayField(field, dragState.index, idx);
+                          }
+                          setDragState(null);
+                          setDragOver(null);
+                        }}
+                        onDragEnd={() => {
+                          setDragState(null);
+                          setDragOver(null);
+                        }}
+                        className={`p-3.5 rounded-xl border space-y-2.5 transition-all bg-gray-50/60 dark:bg-gray-950/40 ${
+                          dragState?.field === field && dragState.index === idx
+                            ? "opacity-50 border-amber-500"
+                            : dragOver?.field === field && dragOver.index === idx
+                              ? "border-amber-500 ring-2 ring-amber-500/20"
+                              : "border-gray-200 dark:border-gray-800"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 cursor-grab">
+                            <GripVertical className="w-4 h-4" /> Élément #{idx + 1}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => updateField(field, objItems.filter((_, i) => i !== idx))}
+                            className="p-1.5 text-red-500 dark:text-red-400 hover:bg-red-500/10 rounded cursor-pointer"
+                            title="Supprimer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                          {Object.entries(obj).map(([subKey, subVal]) => (
+                            <div key={subKey} className={subKey === "description" ? "sm:col-span-2" : ""}>
+                              <label className="block text-xs text-gray-500 dark:text-gray-400 mb-1">{subKey}</label>
+                              {typeof subVal === "number" ? (
+                                <input
+                                  type="number"
+                                  value={subVal}
+                                  onChange={(e) => {
+                                    const next = [...objItems];
+                                    next[idx] = { ...obj, [subKey]: Number(e.target.value) };
+                                    updateField(field, next);
+                                  }}
+                                  className={inputClass}
+                                />
+                              ) : subKey === "description" ? (
+                                <textarea
+                                  rows={2}
+                                  value={String(subVal ?? "")}
+                                  onChange={(e) => {
+                                    const next = [...objItems];
+                                    next[idx] = { ...obj, [subKey]: e.target.value };
+                                    updateField(field, next);
+                                  }}
+                                  className={inputClass}
+                                />
+                              ) : (
+                                <input
+                                  type="text"
+                                  value={String(subVal ?? "")}
+                                  onChange={(e) => {
+                                    const next = [...objItems];
+                                    next[idx] = { ...obj, [subKey]: e.target.value };
+                                    updateField(field, next);
+                                  }}
+                                  className={inputClass}
+                                />
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+
+            if (typeof value === "object" && value !== null) {
               return (
                 <div key={field}>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     {field} <span className="text-xs text-gray-500">(JSON)</span>
                   </label>
                   <textarea
-                    rows={8}
+                    rows={6}
                     defaultValue={JSON.stringify(value, null, 2)}
                     onBlur={(e) => {
                       try {

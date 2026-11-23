@@ -1,6 +1,6 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type DragEvent, type FormEvent } from "react";
 import { useParams } from "react-router-dom";
-import { ArrowDown, ArrowUp, Eye, EyeOff, Image as ImageIcon, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ArrowDown, ArrowUp, Eye, EyeOff, GripVertical, Image as ImageIcon, Pencil, Plus, Trash2, X } from "lucide-react";
 import {
   createCollectionItem,
   deleteCollectionItem,
@@ -170,6 +170,10 @@ export default function CollectionManager() {
   const [saving, setSaving] = useState(false);
   const [pendingDelete, setPendingDelete] = useState<AnyItem | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [dragIndex, setDragIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [skillDragIndex, setSkillDragIndex] = useState<number | null>(null);
+  const [skillDragOverIndex, setSkillDragOverIndex] = useState<number | null>(null);
 
   const load = () => {
     setLoading(true);
@@ -301,9 +305,14 @@ export default function CollectionManager() {
   const handleMove = async (index: number, direction: -1 | 1) => {
     const target = index + direction;
     if (target < 0 || target >= items.length) return;
+    await commitReorder(index, target);
+  };
+
+  const commitReorder = async (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex || fromIndex < 0 || toIndex < 0 || toIndex >= items.length) return;
     const next = [...items];
-    const [moved] = next.splice(index, 1);
-    next.splice(target, 0, moved);
+    const [moved] = next.splice(fromIndex, 1);
+    next.splice(toIndex, 0, moved);
     setItems(next);
     try {
       const updated = await reorderCollection<AnyItem>(
@@ -321,6 +330,33 @@ export default function CollectionManager() {
     }
   };
 
+  const handleDragStart = (index: number, e: DragEvent<HTMLDivElement>) => {
+    setDragIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", String(index));
+  };
+
+  const handleDragOver = (index: number, e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    if (dragOverIndex !== index) setDragOverIndex(index);
+  };
+
+  const handleDrop = async (targetIndex: number, e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const sourceIndex = dragIndex;
+    setDragIndex(null);
+    setDragOverIndex(null);
+    if (sourceIndex !== null && sourceIndex !== targetIndex) {
+      await commitReorder(sourceIndex, targetIndex);
+    }
+  };
+
+  const handleDragEnd = () => {
+    setDragIndex(null);
+    setDragOverIndex(null);
+  };
+
   const inputClass =
     "w-full p-2.5 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-amber-500";
   const iconBtnClass =
@@ -331,7 +367,9 @@ export default function CollectionManager() {
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">{schema.title}</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">Créez, modifiez, masquez ou réordonnez les éléments.</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Créez, modifiez, masquez ou glissez-déposez les éléments pour changer l'ordre.
+          </p>
         </div>
         <button
           onClick={openCreate}
@@ -352,16 +390,30 @@ export default function CollectionManager() {
           {items.map((item, idx) => (
             <div
               key={item.id}
-              className="flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4"
+              draggable
+              onDragStart={(e) => handleDragStart(idx, e)}
+              onDragOver={(e) => handleDragOver(idx, e)}
+              onDrop={(e) => handleDrop(idx, e)}
+              onDragEnd={handleDragEnd}
+              className={`flex flex-wrap items-center justify-between gap-4 bg-white dark:bg-gray-900 border rounded-xl p-4 transition-all select-none cursor-grab active:cursor-grabbing ${
+                dragIndex === idx
+                  ? "opacity-50 border-amber-500 scale-[0.99]"
+                  : dragOverIndex === idx
+                    ? "border-amber-500 ring-2 ring-amber-500/30"
+                    : "border-gray-200 dark:border-gray-800 hover:border-amber-500/40"
+              }`}
             >
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="font-semibold text-gray-900 dark:text-white">{itemTitle(item)}</span>
-                  {!item.isPublished && (
-                    <span className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">Brouillon</span>
-                  )}
+              <div className="flex items-center gap-3 min-w-0">
+                <GripVertical className="w-5 h-5 text-gray-400 dark:text-gray-500 shrink-0" aria-hidden="true" />
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-gray-900 dark:text-white truncate">{itemTitle(item)}</span>
+                    {!item.isPublished && (
+                      <span className="text-xs px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">Brouillon</span>
+                    )}
+                  </div>
+                  {itemSubtitle(item) && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">{itemSubtitle(item)}</p>}
                 </div>
-                {itemSubtitle(item) && <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{itemSubtitle(item)}</p>}
               </div>
 
               <div className="flex items-center gap-1.5">
@@ -575,7 +627,38 @@ export default function CollectionManager() {
                         </button>
                       </div>
                       {rows.map((row, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
+                        <div
+                          key={idx}
+                          draggable
+                          onDragStart={() => setSkillDragIndex(idx)}
+                          onDragOver={(e) => {
+                            e.preventDefault();
+                            if (skillDragOverIndex !== idx) setSkillDragOverIndex(idx);
+                          }}
+                          onDrop={(e) => {
+                            e.preventDefault();
+                            if (skillDragIndex !== null && skillDragIndex !== idx) {
+                              const next = [...rows];
+                              const [moved] = next.splice(skillDragIndex, 1);
+                              next.splice(idx, 0, moved);
+                              updateField(field.name, next);
+                            }
+                            setSkillDragIndex(null);
+                            setSkillDragOverIndex(null);
+                          }}
+                          onDragEnd={() => {
+                            setSkillDragIndex(null);
+                            setSkillDragOverIndex(null);
+                          }}
+                          className={`flex items-center gap-2 p-1.5 rounded-lg border transition-all ${
+                            skillDragIndex === idx
+                              ? "opacity-50 border-amber-500"
+                              : skillDragOverIndex === idx
+                                ? "border-amber-500 bg-amber-500/5"
+                                : "border-transparent"
+                          }`}
+                        >
+                          <GripVertical className="w-4 h-4 text-gray-400 shrink-0 cursor-grab" />
                           <input
                             type="text"
                             placeholder="Ex: React"

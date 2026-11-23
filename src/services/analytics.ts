@@ -12,8 +12,8 @@ export type TrackedEvent =
 /** Envoie une visite ou une action à l'API. Ne bloque jamais l'interface. */
 export function track(name: TrackedEvent = "pageview", label?: string) {
   const path = window.location.pathname || "/";
-  // Ne jamais suivre les pages d'administration
-  if (path.startsWith("/admin")) return;
+  // Ne jamais suivre les pages d'administration ni de connexion
+  if (path.startsWith("/admin") || path.startsWith("/lamougoun")) return;
 
   const utmSource = new URLSearchParams(window.location.search).get("utm_source") ?? undefined;
   fetch(`${API_URL}/api/public/track`, {
@@ -41,7 +41,7 @@ const DEDUPE_MS = 2000;
  */
 export function trackPageview() {
   const path = window.location.pathname || "/";
-  if (path.startsWith("/admin")) return;
+  if (path.startsWith("/admin") || path.startsWith("/lamougoun")) return;
 
   const now = Date.now();
   if (path === lastTrackedPath && now - lastTrackedAt < DEDUPE_MS) {

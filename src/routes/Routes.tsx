@@ -50,7 +50,7 @@ export const Router = createBrowserRouter([
     element: lazyPage(() => import("../pages/admin/AdminRoot")),
     children: [
       {
-        path: "/admin/login",
+        path: "/lamougoun",
         element: lazyPage(() => import("../pages/admin/AdminLogin")),
       },
       {

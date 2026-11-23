@@ -54,6 +54,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
 export interface AdminUser {
   id: number;
   username: string;
+  totpEnabled: boolean;
   createdAt: string;
 }
 
@@ -61,6 +62,8 @@ export interface TokenResponse {
   access_token: string;
   token_type: string;
   expires_in: number;
+  requires_2fa?: boolean;
+  challenge_token?: string | null;
 }
 
 export async function login(username: string, password: string): Promise<TokenResponse> {
@@ -68,11 +71,36 @@ export async function login(username: string, password: string): Promise<TokenRe
   form.set("username", username);
   form.set("password", password);
   const res = await request<TokenResponse>("/api/auth/login", { method: "POST", body: form });
+  if (!res.requires_2fa && res.access_token) {
+    setToken(res.access_token);
+  }
+  return res;
+}
+
+export async function verify2FA(challengeToken: string, code: string): Promise<TokenResponse> {
+  const res = await request<TokenResponse>("/api/auth/verify-2fa", {
+    method: "POST",
+    body: JSON.stringify({ challengeToken, code }),
+  });
   setToken(res.access_token);
   return res;
 }
 
 export const getMe = () => request<AdminUser>("/api/auth/me");
+
+export const setup2FA = () => request<{ secret: string; otpauthUri: string }>("/api/auth/2fa/setup", { method: "POST" });
+
+export const enable2FA = (code: string) =>
+  request<void>("/api/auth/2fa/enable", {
+    method: "POST",
+    body: JSON.stringify({ code }),
+  });
+
+export const disable2FA = (currentPassword: string, code: string) =>
+  request<void>("/api/auth/2fa/disable", {
+    method: "POST",
+    body: JSON.stringify({ currentPassword, code }),
+  });
 
 export const changePassword = (currentPassword: string, newPassword: string) =>
   request<void>("/api/auth/password", {
