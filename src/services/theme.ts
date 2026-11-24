@@ -1,6 +1,7 @@
 import type { ThemeSection } from "../types/content";
 
 const GOOGLE_FONTS: Record<string, string> = {
+  "Plus Jakarta Sans": "Plus+Jakarta+Sans:wght@400;500;600;700;800",
   Inter: "Inter:wght@400;500;600;700;800",
   Poppins: "Poppins:wght@400;500;600;700;800",
   Montserrat: "Montserrat:wght@400;500;600;700;800",
@@ -27,7 +28,7 @@ function shiftHex(hex: string, amount: number): string {
   return `#${[r, g, b].map((c) => c.toString(16).padStart(2, "0")).join("")}`;
 }
 
-function ensureGoogleFont(fontName: string) {
+export function ensureGoogleFont(fontName: string) {
   const spec = GOOGLE_FONTS[fontName];
   if (!spec) return;
   const id = `gf-${fontName.toLowerCase().replace(/\s+/g, "-")}`;
@@ -39,7 +40,7 @@ function ensureGoogleFont(fontName: string) {
   document.head.appendChild(link);
 }
 
-function fontStack(fontName: string): string {
+export function fontStack(fontName: string): string {
   if (!fontName || fontName === "system-sans") {
     return "ui-sans-serif, system-ui, -apple-system, sans-serif";
   }

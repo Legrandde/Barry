@@ -36,6 +36,7 @@ export const defaultContent: SiteContent = {
     footerTagline: "Développé avec passion",
   },
   hero: {
+    layout: "classic",
     greeting: "Bonjour, je suis",
     firstName: "Alhassane",
     lastName: "Barry",
@@ -46,6 +47,7 @@ export const defaultContent: SiteContent = {
     imageAlt: "Alhassane Barry",
     ctaLabel: "Découvrir mes projets",
     ctaHref: "#projets",
+    availabilityBadge: "Disponible pour nouveaux projets",
     techLogos: ["github", "docker", "django", "laravel", "react", "tailwindcss", "nestjs", "postgresql"],
   },
   about: {

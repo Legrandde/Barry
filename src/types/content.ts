@@ -33,7 +33,10 @@ export interface ThemeSection {
   bodyFont: string;
 }
 
+export type HeroLayout = "classic" | "centered" | "editorial" | "poster" | "minimal";
+
 export interface HeroSection {
+  layout?: HeroLayout;
   greeting: string;
   firstName: string;
   lastName: string;
@@ -43,6 +46,7 @@ export interface HeroSection {
   imageAlt: string;
   ctaLabel: string;
   ctaHref: string;
+  availabilityBadge?: string;
   techLogos: string[];
 }
 
