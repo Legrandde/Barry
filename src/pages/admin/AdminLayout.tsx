@@ -17,6 +17,7 @@ import {
   Share2,
   Sliders,
   Sun,
+  Target,
   UserCog,
   X,
 } from "lucide-react";
@@ -176,6 +177,11 @@ export default function AdminLayout() {
             <NavLink to="/admin" end className={navClass} onClick={closeMobile}>
               <span className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" /> Tableau de bord
+              </span>
+            </NavLink>
+            <NavLink to="/admin/prospection" className={navClass} onClick={closeMobile}>
+              <span className="flex items-center gap-2">
+                <Target className="w-4 h-4" /> Prospection
               </span>
             </NavLink>
             <NavLink to="/admin/messages" className={navClass} onClick={closeMobile}>

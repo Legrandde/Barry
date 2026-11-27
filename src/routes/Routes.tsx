@@ -58,6 +58,8 @@ export const Router = createBrowserRouter([
         element: lazyPage(() => import("../pages/admin/AdminLayout")),
         children: [
           { index: true, element: lazyPage(() => import("../pages/admin/AdminDashboard")) },
+          { path: "prospection", element: lazyPage(() => import("../pages/admin/Prospection")) },
+          { path: "prospection/:id", element: lazyPage(() => import("../pages/admin/ProspectDetail")) },
           { path: "sections/:key", element: lazyPage(() => import("../pages/admin/SectionEditor")) },
           { path: "collections/:collection", element: lazyPage(() => import("../pages/admin/CollectionManager")) },
           { path: "messages", element: lazyPage(() => import("../pages/admin/Messages")) },
